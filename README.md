@@ -1,6 +1,6 @@
 # Clock App
 
-Just a real time minimlistic clock
+Just a real time minimalist clock
 
 | how to test test
 

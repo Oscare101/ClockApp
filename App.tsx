@@ -1,9 +1,18 @@
 import { useEffect, useState } from 'react'
-import { Dimensions, StatusBar, StyleSheet, Text, View } from 'react-native'
+import {
+  Dimensions,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import ClockHand from './components/ClockHand'
 import { GetTimeString } from './components/functions'
 import ThemeButton from './components/ThemeButton'
 import * as NavigationBar from 'expo-navigation-bar'
+import SimpleWatch from './components/SimpleWatch'
+import AnalogueWatch from './components/AnalogueWatch'
 const width = Dimensions.get('screen').width
 
 const clockSizeFromWidth: number = width * 0.9
@@ -26,6 +35,7 @@ const clockProps: any = {
 }
 
 export default function App() {
+  const [type, setType] = useState<string>('simple')
   const [time, setTime] = useState<number>(
     new Date().getHours() * 3600 +
       new Date().getMinutes() * 60 +
@@ -73,70 +83,24 @@ export default function App() {
           )
         }}
       />
-      <View
-        style={[
-          styles.clock,
-          {
-            backgroundColor: clockProps.backgroundColor[theme],
-            borderColor: clockProps.borderColor[theme],
-          },
-        ]}
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => {
+          if (type === 'simple') {
+            setType('analogue')
+          } else {
+            setType('simple')
+          }
+        }}
+        style={{ position: 'absolute', top: 20, left: 20 }}
       >
-        <Text
-          style={[styles.clockTitle, { color: clockProps.textColor[theme] }]}
-        >
-          {GetTimeString(time, 'hour')}:{GetTimeString(time, 'minute')}:
-          {GetTimeString(time, 'second')}
-        </Text>
-        <ClockHand
-          type="hour"
-          clockProps={clockProps}
-          angle={(360 * ((time / 60 / 60) % 12)) / 12}
-          theme={theme}
-        />
-        <ClockHand
-          type="minute"
-          clockProps={clockProps}
-          angle={(360 * ((time / 60) % 60)) / 60}
-          theme={theme}
-        />
-        <ClockHand
-          type="second"
-          clockProps={clockProps}
-          angle={(360 * (time % 60)) / 60}
-          theme={theme}
-        />
-        {[...Array(6)].map((_: any, index: number) => (
-          <View
-            key={index}
-            style={{
-              width: clockSizeFromWidth,
-              transform: [{ rotate: `${(180 * index) / 6}deg` }],
-              height: 10,
-              position: 'absolute',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexDirection: 'row',
-              paddingHorizontal: clockProps.borderWidth * 0.9,
-            }}
-          >
-            {[...Array(2)].map((_: any, index: number) => (
-              <View
-                key={index}
-                style={{
-                  width: clockProps.borderWidth,
-                  height: clockProps.borderWidth,
-                  backgroundColor: clockProps.borderColor[theme],
-                  borderBottomRightRadius: index ? 0 : clockProps.borderWidth,
-                  borderBottomLeftRadius: index ? clockProps.borderWidth : 0,
-                  borderTopRightRadius: index ? 0 : clockProps.borderWidth,
-                  borderTopLeftRadius: index ? clockProps.borderWidth : 0,
-                }}
-              />
-            ))}
-          </View>
-        ))}
-      </View>
+        <Text style={{ fontSize: width * 0.06 }}>type</Text>
+      </TouchableOpacity>
+      {type === 'simple' ? (
+        <SimpleWatch theme={theme} time={time} />
+      ) : (
+        <AnalogueWatch theme={theme} time={time} />
+      )}
     </View>
   )
 }
